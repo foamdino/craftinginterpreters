@@ -87,8 +87,24 @@ public class Scanner {
 
             /* longer lexemes */
             case '/':
+                // comments starting with '//' go to end of line
                 if (match('/')) {
                     while(peek() != '\n' && !isAtEnd()) {
+                        advance();
+                    }
+                /* or comments with /* go to next */
+                } else if (match('*')) {
+                    while(!isAtEnd()) {
+                        /* if we have a newline inside the block comment, chomp and inc the line count */
+                        if (match('\n')) {
+                            line++;
+                        }
+                        if (peek() == '/') {
+                            /* we're at the end of the comment, move past the final '/' and exit loop */
+                            advance();
+                            break;
+                        }
+                        /* in the comment just chomp and discard char */
                         advance();
                     }
                 } else {
